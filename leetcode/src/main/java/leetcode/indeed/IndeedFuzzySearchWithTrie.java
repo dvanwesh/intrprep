@@ -1,5 +1,8 @@
 package leetcode.indeed;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.*;
 import java.util.stream.Collectors;
 /*
@@ -68,17 +71,21 @@ public class IndeedFuzzySearchWithTrie {
                                         "java software engineer",
                                         "java indeed engineer"};
         // Read documents
-        for (int i = 0; i < docs.length; i++) {
-            storeDocument(docs[i], i);
+        InputStream inp = IndeedFuzzySearchWithTrie.class.getClassLoader().getResourceAsStream("indeed/jobs-data.txt");
+        BufferedReader br = new BufferedReader(new InputStreamReader(inp));
+        int n = Integer.parseInt(br.readLine());
+        for (int i = 0; i < n; i++) {
+            storeDocument(br.readLine(), i);
         }
         TrieNode curr = root;
         printTrie(curr, "");
         String [] searches = new String[]{"java engineer",
             "java",
             "engineer"};
+        n = Integer.parseInt(br.readLine());
         // Read searches
-        for (int j = 0; j < searches.length; j++) {
-            System.out.println(performSearch(searches[j]));
+        for (int j = 0; j < n; j++) {
+            System.out.println(performSearch(br.readLine()));
         }
     }
 

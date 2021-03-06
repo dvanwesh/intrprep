@@ -3,7 +3,11 @@ package leetcode.indeed;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.*;
-
+/*
+ * input is a list of job posts with description and jobId
+ * the for every search query calculate the search rank by calculating max numbers of
+ * search terms that match the jb desc and return top 10 ranked job ids.
+ * */
 public class IndeedFuzzySearch {
     private static Map<String, List<Integer>> searchIndex = new HashMap<>();
     private static final String DELI = " ";
