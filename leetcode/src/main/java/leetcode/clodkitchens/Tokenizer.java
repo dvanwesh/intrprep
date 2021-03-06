@@ -8,7 +8,10 @@ Feb 8th, 2021
 import java.util.*;
 
 /*
-You are provided with a set of APIs for reading a simplified XML document. You’re tasked with designing an object that captures all the tags, texts, and parent-child relationships between elements found in an XML document. After designing the object, you’re to instantiate an instance of it using data from the provided token stream API.
+You are provided with a set of APIs for reading a simplified XML document.
+You’re tasked with designing an object that captures all the tags, texts, and
+parent-child relationships between elements found in an XML document. After designing the object,
+you’re to instantiate an instance of it using data from the provided token stream API.
 
 <a>
   <b>

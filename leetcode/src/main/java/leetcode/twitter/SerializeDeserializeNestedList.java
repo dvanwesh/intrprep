@@ -87,12 +87,10 @@ public class SerializeDeserializeNestedList {
             }
             else{
                 int j = i + 1;
-                while(j < str.length() && str.charAt(j) != ')' && str.charAt(j) != '('){
+                while(j < str.length() && str.charAt(j) != ',' && str.charAt(j) != ')' && str.charAt(j) != '('){
                     j++;
                 }
-                for(String s : str.substring(i, j).split(",")){
-                    stk.peek().getValueAsList().add(new NestedList(s));
-                }
+                stk.peek().getValueAsList().add(new NestedList(str.substring(i, j)));
                 i = j-1;
             }
         }
