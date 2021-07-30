@@ -1,7 +1,6 @@
 # Compiled class file
 *.class
 .idea
-*.gradle
 build
 .git/objects
 
