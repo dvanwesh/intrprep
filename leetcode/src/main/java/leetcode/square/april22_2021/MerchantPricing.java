@@ -1,12 +1,6 @@
 package leetcode.square.april22_2021;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 /*
 Problem
 
@@ -85,57 +79,66 @@ XSCX, 2.76
 
 */
 class MerchantPricing {
-    private Map<Integer, Pair> requestMap;
-    private Map<String, Double> resultMap;
-    private Map<Integer, List<Integer>> parentMap;
-    public static void main(String[] args) {
-        MerchantPricing sol = new MerchantPricing();
-        sol.takeRequest(1, "XSCMA", 2.75, null);
-        sol.takeRequest(2, "XSC", 2.75, 1);
-        sol.takeRequest(3, "XSCX", 2.76, 1);
-        sol.takeRequest(4, "CPP", 3.09, 2);
-        sol.takeDecision(1, false);
 
-        Map<String, Double> res = sol.getResult();
+    static class Request {
+        int requestId;
+        String merchantId;
+        double price;
+        Integer parentId;
+
+        public Request(int requestId, String merchantId, double price, Integer parentId) {
+            this.requestId = requestId;
+            this.merchantId = merchantId;
+            this.price = price;
+            this.parentId = parentId;
+        }
+    }
+    private Map<Integer, Request> requestMap = new HashMap<>();
+    private Map<String, Double> resultMap = new HashMap<>();
+    private Set<Integer> handledRequests = new HashSet<>();
+    public static void main(String[] args) {
+        MerchantPricing merchantPricing = new MerchantPricing();
+        merchantPricing.takeRequest(1, "XSCMA", 2.75, null);
+        merchantPricing.takeRequest(2, "XSC", 2.75, 1);
+        merchantPricing.takeRequest(3, "XSCX", 2.76, 1);
+        merchantPricing.takeRequest(4, "CPP", 3.09, 2);
+        merchantPricing.takeDecision(1, true);
+        merchantPricing.takeRequest(5, "XSCX", 5.00, null);
+        merchantPricing.takeDecision(5, true);
+
+        Map<String, Double> res = merchantPricing.getResult();
         for(String key : res.keySet()){
             System.out.println(key+"--"+res.get(key));
         }
     }
 
-    public MerchantPricing(){
-        requestMap = new HashMap<>();
-        resultMap = new HashMap<>();
-        parentMap = new HashMap<>();
-    }
-
     public void takeRequest(int requestId, String merchantId, Double price, Integer parent){
-        requestMap.put(requestId, new Pair(merchantId, price));
-        if(parent != null){
-            parentMap.computeIfAbsent(parent, a->new ArrayList<>()).add(requestId);
-        }
+        requestMap.put(requestId, new Request(requestId, merchantId, price, parent));
     }
 
     public void takeRequest(int requestId, String merchantId, Double price){
-        requestMap.put(requestId, new Pair(merchantId, price));
+        requestMap.put(requestId, new Request(requestId, merchantId, price, null));
     }
 
     public void takeDecision(int requestId, boolean decision){
-        if(decision && requestMap.containsKey(requestId)){
-            resultMap.put(requestMap.get(requestId).getKey(), requestMap.get(requestId).getValue());
+        if (handledRequests.contains(requestId)) {
+            return;
         }
-        if(!parentMap.isEmpty() && parentMap.get(requestId) != null){
-            applyPrice(requestId, new HashSet<>());
+        if(decision){
+            approveRequestAndSubRequests(requestId);
         }
+        handledRequests.add(requestId);
     }
 
-    private void applyPrice(int requestId, Set<Integer> seen){
-        if(requestMap.containsKey(requestId)){
-            resultMap.put(requestMap.get(requestId).getKey(), requestMap.get(requestId).getValue());
+    private void approveRequestAndSubRequests(int requestId) {
+        Request request = requestMap.get(requestId);
+        if (request == null) {
+            return;
         }
-        seen.add(requestId);
-        for(int childRequest : parentMap.getOrDefault(requestId, new ArrayList<>())){
-            if(!seen.contains(childRequest)){
-                applyPrice(childRequest, seen);
+        resultMap.put(request.merchantId, request.price);
+        for (Request rqst:requestMap.values()) {
+            if (rqst.parentId != null && rqst.parentId == requestId) {
+                approveRequestAndSubRequests(rqst.requestId);
             }
         }
     }
@@ -145,18 +148,3 @@ class MerchantPricing {
     }
 }
 
-class Pair{
-    String key;
-    Double value;
-    public Pair(String key, Double value){
-        this.key = key;
-        this.value = value;
-    }
-    public String getKey(){
-        return key;
-    }
-
-    public Double getValue(){
-        return value;
-    }
-}

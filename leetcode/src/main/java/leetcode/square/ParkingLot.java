@@ -1,32 +1,29 @@
 package leetcode.square;
 
-import datastructures.util.Pair;
-
 import java.time.Duration;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Queue;
+import java.util.*;
 
 public class ParkingLot {
-    Map<ParkingSpot, Car> occupiedSpots;
+    Map<Car, ParkingSpot> carToParkingSpotMap;
+    Map<Long, Car> ticketToCarMap;
     Queue<ParkingSpot> availableSpots;
     long ticketId = 1;
     public static void main(String[] args) throws NoSuchFieldException {
         ParkingLot lot = new ParkingLot(5);
+        System.out.println("available spots:"+lot.availableSpots.size());
         Ticket ticket = lot.parkCar(new Car("12abc", "Tesla", "Model_y"));
+        System.out.println("available spots:"+lot.availableSpots.size());
         System.out.println(ticket.printTicket());
-        System.out.println(ticket.getPrice());
         System.out.println(lot.unParkCar(ticket));
+        System.out.println(ticket.getPrice());
+        System.out.println("available spots:"+lot.availableSpots.size());
     }
 
     public ParkingLot(int n) {
-        occupiedSpots = new HashMap<>();
+        carToParkingSpotMap = new HashMap<>();
         availableSpots = new LinkedList<>();
+        ticketToCarMap = new HashMap<>();
         for(int i = 0 ; i < n; i++){
             for(int j = 0; j < n; j++){
                 for(int k = 0; k < n; k++){
@@ -41,19 +38,24 @@ public class ParkingLot {
             throw new NoSuchFieldException("Parking spot is not available");
         }
         ParkingSpot spot = availableSpots.poll();
-        occupiedSpots.put(spot, car);
-        return new Ticket(ticketId++, 10, spot);
+        carToParkingSpotMap.put(car, spot);
+        ticketToCarMap.put(ticketId, car);
+        return new Ticket(ticketId++, 10);
     }
 
     public Car unParkCar(Ticket ticket){
-        if(!occupiedSpots.containsKey(ticket.spot)){
+        Car car = ticketToCarMap.get(ticket.id);
+        if(car == null){
             throw  new NoSuchElementException("invalid Ticket");
         }
         ticket.invalidate();
-        return occupiedSpots.remove(ticket.spot);
+        ticketToCarMap.remove(ticket.id);
+        ParkingSpot spot = carToParkingSpotMap.remove(car);
+        availableSpots.offer(spot);
+        return car;
     }
 
-    static class ParkingSpot{
+    static class ParkingSpot {
         String index;
         boolean occupied;
         public ParkingSpot(int i, int j, int k) {
@@ -91,14 +93,12 @@ public class ParkingLot {
         long id;
         int pricePerHour;
         boolean active;
-        ParkingSpot spot;
         ZonedDateTime startDate;
         ZonedDateTime endDate;
 
-        public Ticket(long id, int pricePerHour, ParkingSpot spot) {
+        public Ticket(long id, int pricePerHour) {
             this.id = id;
             active = true;
-            this.spot = spot;
             this.pricePerHour = pricePerHour;
             startDate = ZonedDateTime.now();
         }
@@ -116,7 +116,6 @@ public class ParkingLot {
         public String printTicket() {
             return "Ticket{" +
                 "id=" + id +
-                ", spot=" + spot +
                 ", startDate=" + startDate +
                 '}';
         }

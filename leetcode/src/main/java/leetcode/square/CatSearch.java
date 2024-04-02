@@ -19,20 +19,14 @@ public class CatSearch {
 
     private Predicate<Cat> getPredicate(String searchCriteria, String symbol,
                                         int val) {
-        Predicate<Cat> heightGreaterThan = cat -> cat.getHeight() > val;
-        Predicate<Cat> heightEqualTo = cat -> cat.getHeight() == val;
-        Predicate<Cat> heightLessThan = cat -> cat.getHeight() < val;
-        Predicate<Cat> weightGreaterThan = cat -> cat.getWeight() > val;
-        Predicate<Cat> weightEqualTo = cat -> cat.getWeight() == val;
-        Predicate<Cat> weightLessThan = cat -> cat.getWeight() < val;
         Map<String, Predicate<Cat>> heightMap = new HashMap<>();
         Map<String, Predicate<Cat>> weightMap = new HashMap<>();
-        heightMap.put(">", heightGreaterThan);
-        heightMap.put("=", heightEqualTo);
-        heightMap.put("<", heightLessThan);
-        weightMap.put(">", weightGreaterThan);
-        weightMap.put("=", weightEqualTo);
-        weightMap.put("<", weightLessThan);
+        heightMap.put(">", cat -> cat.getHeight() > val);
+        heightMap.put("=", cat -> cat.getHeight() == val);
+        heightMap.put("<", cat -> cat.getHeight() < val);
+        weightMap.put(">", cat -> cat.getWeight() > val);
+        weightMap.put("=", cat -> cat.getWeight() == val);
+        weightMap.put("<", cat -> cat.getWeight() < val);
         if (searchCriteria.equals("WEIGHT")) {
             return weightMap.get(symbol);
         } else {
@@ -42,43 +36,20 @@ public class CatSearch {
 
     public List<Cat> getCatNames(List<Cat> cats, String searchCriteria,
                                  Integer searchValue, String symbol) {
-        List<Cat> res = new ArrayList<>();
-        /*for(Cat cat: cats){
-        if(doesCriteriaMatch(cat, searchValue, symbol,
-                           searchCriteria.equals("WEIGHT"))){
-            res.add(cat);
-        }
-        }*/
-        res = cats.stream().filter(getPredicate(searchCriteria, symbol, searchValue)).
+        List<Cat> res = cats.stream().filter(getPredicate(searchCriteria, symbol, searchValue)).
             collect(Collectors.toList());
         if (searchCriteria.equals("WEIGHT")) {
-            Collections.sort(res, (a, b) -> b.getWeight() == a.getWeight() ?
-                b.getName().compareTo(a.getName()) :
-                b.getWeight() - a.getWeight());
+            res.sort((a, b) -> b.getWeight() == a.getWeight() ?
+                    b.getName().compareTo(a.getName()) :
+                    b.getWeight() - a.getWeight());
         } else {
-            Collections.sort(res, (a, b) -> b.getHeight() == a.getHeight() ?
-                b.getName().compareTo(a.getName()) :
-                b.getHeight() - a.getHeight());
+            res.sort((a, b) -> b.getHeight() == a.getHeight() ?
+                    b.getName().compareTo(a.getName()) :
+                    b.getHeight() - a.getHeight());
         }
         return res;
     }
 
-    private boolean doesCriteriaMatch(Cat cat, int val, String symbol,
-                                      boolean isWeight) {
-        switch (symbol) {
-            case "<":
-                return (isWeight && cat.getWeight() < val) ||
-                    (!isWeight && cat.getHeight() < val);
-            case ">":
-                return (isWeight && cat.getWeight() > val) ||
-                    (!isWeight && cat.getHeight() > val);
-            case "=":
-                return (isWeight && cat.getWeight() == val) ||
-                    (!isWeight && cat.getHeight() == val);
-            default:
-                return false;
-        }
-    }
 }
 
 class Cat {

@@ -47,11 +47,6 @@ node_modules/
 # macOS files
 .DS_Store
 
-# Ignore specific directories for each module
-demo/build/
-leetcode/build/
-myprep/build/
-
 # Gradle cache and wrapper directories
 gradle/
 wrapper/
