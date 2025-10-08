@@ -1,0 +1,14 @@
+virtualenv -p python3 venv
+source venv/bin/activate
+
+pip install requests  
+pip install flask
+pip install twilio
+pip freeze > requirements.txt
+
+export flask_app=app.py
+flask run
+
+ngrok http 5000
+export TWILIO_ACCOUNT=xxx
+export TWILIO_TOKEN=yyy
